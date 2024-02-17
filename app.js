@@ -8,6 +8,8 @@ import courseRoutes from "./routes/course.routes.js";
 import paymentRoutes from "./routes/payment.routes.js"
 import errorMiddleware from './middlewares/error.middleware.js';
 import miscRoutes from "./routes/miscellaneous.routes.js"
+import serverless from "serverless-http";
+import router from "./routes/user.routes.js"
 
 config()
 
@@ -26,6 +28,7 @@ app.use(cors({
 app.use(cookieParser())
 app.use(morgan("dev"))
 
+app.use("/.lms-server/app",router)
 app.use("/ping",(req,res)=>{
     res.send("/pong")
 })
@@ -43,5 +46,7 @@ app.all("*",(req,res)=>{
 
 app.use(errorMiddleware)
 
+
+export const handler = serverless(app);
 
 export default app
