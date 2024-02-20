@@ -177,6 +177,7 @@ const getProfile=async(req,res,next)=>{
 
 
 const forgotPassword=async(req,res,next)=>{
+   
    const {email}= req.body;
 
    if(!email){
@@ -184,6 +185,7 @@ const forgotPassword=async(req,res,next)=>{
    }
 
    const user= await User.findOne({email})
+
    if(!user){
       return next (new AppError("Email not registered",400))
    }
@@ -193,11 +195,12 @@ const forgotPassword=async(req,res,next)=>{
    await user.save();
 
    const resetPasswordURL=`${process.env.FRONTEND_URL}/reset-password/${resetToken}`
+   console.log("reset",resetPasswordURL)
 
    const subject="Reset Password"
    const message=`You can reset your password by clicking <a href=${resetPasswordURL} target="_blank">Reset your password</a>\n .If the above link does not work for some reason then copy paste this link in new tab ${resetPasswordURL}.\n If you have no requested this, Kindly ignore`
    try{
-      await sendEmail(email,subject,message)
+     let r= await sendEmail(email,subject,message)
 
       res.status(200).json({
          success:true,
@@ -210,7 +213,10 @@ const forgotPassword=async(req,res,next)=>{
 
        user.save()
 
-      return next (new AppError(e.message,400))
+      return next (new AppError(
+         e.message || 'Something went wrong, please try again.',
+         500
+       ))
    }
 }
 
@@ -245,12 +251,12 @@ const resetPassword=async(req,res,next)=>{
         })
 }
 
-const changePassword=async(req,res)=>{
+const changePassword=async(req,res,next)=>{
    const {oldPassword,newPassword}=req.body;
    const {id}=req.user
 
    if(!oldPassword || !newPassword){
-      return nextTick(
+      return next(
          new AppError("All fields are mandatory",400)
       )
    }

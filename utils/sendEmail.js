@@ -1,15 +1,25 @@
 import nodemailer from "nodemailer";
 
-let transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: false,
+// let transporter = nodemailer.createTransport({
+//   host: process.env.SMTP_HOST,
+//   port: process.env.SMTP_PORT,
+//   secure: false,
+//   auth: {
+//     // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+//     user: process.env.SMTP_USERNAME,
+//     pass: process.env.SMTP_PASSWORD,
+//   },
+// });
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.ethereal.email',
+  port: 587,
   auth: {
-    // TODO: replace `user` and `pass` values from <https://forwardemail.net>
-    user: process.env.SMTP_USERNAME,
-    pass: process.env.SMTP_PASSWORD,
-  },
+      user: 'gregg.leuschke85@ethereal.email',
+      pass: 'kmh5YchdEYezjYZv7G'
+  }
 });
+
 
 // async..await is not allowed in global scope, must use a wrapper
 async function sendEmail(email,subject,message) {
